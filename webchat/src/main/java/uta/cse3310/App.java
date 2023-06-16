@@ -13,12 +13,13 @@ import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import uta.cse3310.HTTPServer;
+
 /**
  * Hello world!
  *
  */
-public class App extends WebSocketServer
-{
+public class App extends WebSocketServer {
     public App(int port) throws UnknownHostException {
       super(new InetSocketAddress(port));
     }
@@ -51,12 +52,19 @@ public class App extends WebSocketServer
 		}
 
     public static void main( String[] args ) throws InterruptedException, IOException {
+			int httpPort = 8080;
 			int port = 8081;
-			try {
-				port = Integer.parseInt(args[0]);
-			} catch (Exception ex) {
 
-			}
+			// try {
+			// 	port = Integer.parseInt(args[0]);
+			// } catch (Exception ex) {
+
+			// }
+
+			HTTPServer h = new HTTPServer(httpPort, "./html");
+			h.start();
+			System.out.println("HTTPServer started on port: " + httpPort);
+
 			App s = new App(port);
 			s.start();
 			System.out.println("ChatServer started on port: " + s.getPort());
