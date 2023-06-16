@@ -1924,12 +1924,15 @@ public class HTTPServer {
     }
 
     protected volatile int port;
+    protected volatile String webroot;
     protected volatile int socketTimeout = 10000;
     protected volatile ServerSocketFactory serverSocketFactory;
     protected volatile boolean secure;
     protected volatile Executor executor;
     protected volatile ServerSocket serv;
     protected final Map<String, VirtualHost> hosts = new ConcurrentHashMap<String, VirtualHost>();
+
+    // private String webroot;
 
     /**
      * Constructs an HTTPServer which can accept connections on the given port.
@@ -1942,13 +1945,18 @@ public class HTTPServer {
         setPort(port);
         addVirtualHost(new VirtualHost(null)); // add default virtual host
     }
+    public HTTPServer(int port, String webroot) {
+        setPort(port);
+        setWebroot(webroot);
+        addVirtualHost(new VirtualHost(null)); // add default virtual host
+    }
 
     /**
      * Constructs an HTTPServer which can accept connections on the default HTTP port 80.
      * Note: the {@link #start()} method must be called to start accepting connections.
      */
     public HTTPServer() {
-        this(80);
+        this(80, "./html");
     }
 
     /**
@@ -1958,6 +1966,10 @@ public class HTTPServer {
      */
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public void setWebroot(String webroot) {
+        this.webroot = webroot;
     }
 
     /**
@@ -3083,14 +3095,13 @@ public class HTTPServer {
             File dir = new File(args[0]);
             if (!dir.canRead())
                 throw new FileNotFoundException(dir.getAbsolutePath());
-            // int port = args.length < 2 ? 80 : (int)parseULong(args[1], 10);
-            int port = 8080;
+            int port = args.length < 2 ? 80 : (int)parseULong(args[1], 10);
             // set up server
             for (File f : Arrays.asList(new File("/etc/mime.types"), new File(dir, ".mime.types")))
                 if (f.exists())
                     addContentTypes(new FileInputStream(f));
-            HTTPServer server = new HTTPServer(port);
-            // HTTPServer server = new HTTPServer(port, "./html");
+            // HTTPServer server = new HTTPServer(port);
+            HTTPServer server = new HTTPServer(port, "./html");
             if (System.getProperty("javax.net.ssl.keyStore") != null) // enable SSL if configured
                 server.setServerSocketFactory(SSLServerSocketFactory.getDefault());
             VirtualHost host = server.getVirtualHost(null); // default host
