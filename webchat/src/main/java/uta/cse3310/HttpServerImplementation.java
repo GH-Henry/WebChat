@@ -51,7 +51,7 @@ public class HttpServerImplementation
             });
 
             server.start();
-            System.out.println("HTTPServer is listening on port: " + port + "\n");
+            System.out.println("HTTPServer is listening on port: " + port);
         } catch (Exception e) {
             System.err.println("error: " + e);
         }

@@ -25,28 +25,18 @@ public class WSS_App extends WebSocketServer
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        conn.send("Welcome to the server! client id: " + client_id++); //This method sends a message to the new client
-        broadcast("New connection: " + handshake
-            .getResourceDescriptor()); //This method sends a message to all clients connected
         System.out.println(
             conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!");
 
-        //Requirement #2, print new client id to stdout
-        System.out.println("Client " + (client_id-1) + " joined");
-
-
-        class Client {
-            int client_id;
-            Client(int _client_id) {    client_id = _client_id;    }
-        }
+        System.out.println("Client " + client_id + " joined");
 
         Gson gson = new Gson();
         Client c = new Client(client_id);
 
         conn.send(gson.toJson(c)); //Send the client id in json
-        System.out.println(gson.toJson(c));
+        System.out.println(gson.toJson(c).toString());
 
-
+        client_id++;
     }
 
     @Override
@@ -57,13 +47,11 @@ public class WSS_App extends WebSocketServer
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        broadcast(message);
         System.out.println(conn + ": " + message);
     }
 
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
-        broadcast(message.array());
         System.out.println(conn + ": " + message);
     }
 
@@ -97,5 +85,10 @@ public class WSS_App extends WebSocketServer
         a.start();
         System.out.println("\n\nWebSocket Server started on port: " + port + "\n\n");
     }
+
+    class Client {
+            int client_id;
+            Client(int _client_id) {    client_id = _client_id;    }
+        }
 
 }
