@@ -7,47 +7,25 @@ coded in the Java programming language and will provide the user(s) with a brows
 Given this is a summer course and is over 11 weeks (about 2 and a half months) instead of the usual 14
 weeks (about 3 months).
 
-# Authors
-## Group 1
+# Authors, Group 1
 
-<table align="center" style="line-height:1;">
-<thead>
-  <tr>
-    <td align="center">Edward Alkire</td>
-    <td><td><td><td></td></td></td></td>
-    <td align="center">Henry Chiu</td>
-    <td><td><td><td></td></td></td></td>
-    <td align="center">Derrick Perry</td>
-    <td><td><td><td></td></td></td></td>
-    <td align="center">Januar Soepangat</td>
-  </tr>
-  <tr>
-    <td align="center"><a href="https://github.com/EddieIsNotAvailable">@EddieIsNotAvailable</a></td>
-    <td><td><td><td></td></td></td></td>
-    <td align="center"><a href="https://github.com/GH-Henry">@GH-Henry</a></td>
-    <td><td><td><td></td></td></td></td>
-    <td align="center"><a href="https://github.com/d-perry0">@d-perry0</a></td>
-    <td><td><td><td></td></td></td></td>
-    <td align="center"><a href="https://github.com/JanuarS">@JanuarS</a></td>
-  </tr>
-</thead>
-</table>
+- Edward Alkire [@EddieIsNotAvailable](https://github.com/EddieIsNotAvailable)
+- Henry Chiu [@GH-Henry](https://github.com/GH-Henry)
+- Derrick Perry [@d-perry0](https://github.com/d-perry0)
+- Januar Soepangat [@JanuarS](https://github.com/JanuarS)
 
 # Roadmap
 
-- Iteration 1
+- [X] Iteration 1
   - Framework of the program is created 
-  - Status: Completed June 24, 2023
 
-- Iteration 2
+- [ ] Iteration 2
   - The program is not usable, but has the overall design implemented and supports the sending of text between all users.
-  - Status: In progress
 
-- Iteration 3
+- [ ] Iteration 3
   - The program is functional, but not perfect. Code is unit tested. The documentation is partially complete. Additional functionality is added to the program.
-  - Status: Not yet started
 
-- Iteration 4
+- [ ] Iteration 4
   - Fully functional program. All requirements implemented and verified. Documentation is complete.
   - Status: Not yet started
 
