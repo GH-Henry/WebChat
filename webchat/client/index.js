@@ -1,6 +1,6 @@
-var connection = null;
+let connection = null;
 
-var serverUrl = "ws://" + window.location.hostname + ":8081";
+const serverUrl = "ws://" + window.location.hostname + ":8081";
       
 // Create the connection with the server
 connection = new WebSocket(serverUrl);
@@ -15,12 +15,12 @@ connection.onclose = function (evt) {
 }
 
 connection.onmessage = function (evt) {
-  var msg;
+  let msg;
   msg = evt.data;
 
   console.log("Message received: " + msg);
   document.getElementById("topMessage").innerHTML = msg;
-  var obj = JSON.parse(msg);
+  let obj = JSON.parse(msg);
 
   if( "client_id" in obj) {
     document.getElementById("secondMessage").innerHTML = obj.client_id;
