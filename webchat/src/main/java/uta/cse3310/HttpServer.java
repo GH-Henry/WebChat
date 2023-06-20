@@ -14,17 +14,18 @@ import net.freeutils.httpserver.HTTPServer.VirtualHost;
 public class HttpServer
 {
 
-  int port;
-  String dirName;
+    int port;
+    String dirName;
 
-    public HttpServer(int _port, String _dirName) {
+    public HttpServer(int _port, String _dirName) 
+    {
         System.out.println("creating http server port " + _port);
         port = _port;
         dirName = _dirName;
     }
 
-    public void start() {
-
+    public void start() 
+    {
         System.out.println("In http server impl start\n");
         
         try
@@ -55,7 +56,5 @@ public class HttpServer
         } catch (Exception e) {
             System.err.println("error: " + e);
         }
-
     }
-
 }
