@@ -1,1 +1,34 @@
-# se3310_su23_group_1
+<h2 align="center" style="font-size:200%;line-height:2;">CSE 3310 Semester Project</h2>
+
+# Project Description
+
+The semester project is the creation of a multi-user, web-based chat program, called WebChat. It will be
+coded in the Java programming language and will provide the user(s) with a browser-based interface.
+Given this is a summer course and is over 11 weeks (about 2 and a half months) instead of the usual 14
+weeks (about 3 months).
+
+# Authors, Group 1
+
+- Edward Alkire [@EddieIsNotAvailable](https://github.com/EddieIsNotAvailable)
+- Henry Chiu [@GH-Henry](https://github.com/GH-Henry)
+- Derrick Perry [@d-perry0](https://github.com/d-perry0)
+- Januar Soepangat [@JanuarS](https://github.com/JanuarS)
+
+# Roadmap
+
+- [X] Iteration 1
+  - Framework of the program is created 
+
+- [ ] Iteration 2
+  - The program is not usable, but has the overall design implemented and supports the sending of text between all users.
+
+- [ ] Iteration 3
+  - The program is functional, but not perfect. Code is unit tested. The documentation is partially complete. Additional functionality is added to the program.
+
+- [ ] Iteration 4
+  - Fully functional program. All requirements implemented and verified. Documentation is complete.
+  - Status: Not yet started
+
+# Lessons Learned
+
+In iteration 1 we learned how to create branches and merge branches together using git. We also learned how to connect a functioning HTML page with a Java server via websockets. 
