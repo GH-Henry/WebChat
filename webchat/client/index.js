@@ -1,5 +1,4 @@
 let connection = null;
-
 const serverUrl = "ws://" + window.location.hostname + ":8081";
       
 // Create the connection with the server

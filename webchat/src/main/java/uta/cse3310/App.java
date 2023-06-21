@@ -16,10 +16,8 @@ import org.java_websocket.server.WebSocketServer;
 
 import com.google.gson.Gson;
 
-// import uta.cse3310.HTTPServer;
-
 /**
- * Hello world!
+ * WebSocketServer
  *
  */
 public class App extends WebSocketServer {
@@ -94,6 +92,6 @@ public class App extends WebSocketServer {
 
     class Client {
             int client_id;
-            Client(int _client_id) {    client_id = _client_id;    }
+            Client(int _client_id) { client_id = _client_id; }
         }
 }
