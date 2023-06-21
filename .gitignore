@@ -1,0 +1,4 @@
+# .vscode
+/webchat/target/
+*.jar
+*class
