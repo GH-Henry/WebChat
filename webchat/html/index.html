@@ -1,46 +1,88 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <meta charset="utf-8">
-      <title>WebSocket Test</title>
-   </head>
+  <head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="./css/styles.css">
+  </head>
 
-   <div id="topMessage">example label</div>
-   <div id="secondMessage">example label</div>
+  <body>
+    <div id="form_container">
 
+      <form id="login_form">
+        <h2 class="form_title">Login</h2>
+        <div>
+          <label>Username</label>
+          <input type="text" id="login_form_username" minlength="3" maxlength="30" required autofocus title="(3-30 character length)">
+        </div>
 
-  <script language = "javascript" type = "text/javascript">
+        <div>
+          <label>Password</label>
+          <input type="password" id="login_form_password" minlength="3" maxlength="30" required title="(3-30 character length)">
+        </div>
 
-      var connection = null;
+        <div>
+          <input type="submit" class="form_button" value="Log In">
+        </div>
+        <div class="form_link">
+          <a href="#" onclick="switchForm()">Create an account</a>
+        </div>
+      </form>
 
-      var serverUrl = "ws://" + window.location.hostname + ":8081";
+      <form id="signup_form" style="display: none;">
+        <h2 class="form_title">Create Account</h2>
+        <div>
+          <label>Username</label>
+          <input type="text" id="signup_form_username" minlength="3" maxlength="30" required autofocus title="(3-30 character length)">
+        </div>
+    
+        <div>
+          <label>Password</label>
+          <input type="password" id="signup_form_password" minlength="3" maxlength="30" required title="(3-30 character length)">
+        </div>
+    
+        <div>
+          <input type="submit" class="form_button" value="Continue">
+        </div>
+        <div class="form_link">
+          <a href="#" onclick="switchForm()">Login to existing account</a>
+        </div>
+      </form>
+    </div>
+
+    <div id="chat_container" style="display: none;">
+
+      <div id="contacts_sidebar">
+          <h2>Contacts</h2>
+          <ul id="contacts_list">
+              <li id="open_chat">Global Chat</li>
+          </ul>
+          <div id="user_info">
+            <div id="username"></div>
+          </div>
+      </div>
       
-      // Create the connection with the server
-      connection = new WebSocket(serverUrl);
-
-      connection.onopen = function (evt) {
-         console.log("open");
-      }
-      connection.onclose = function (evt) {
-         console.log("close");
-         document.getElementById("topMessage").innerHTML = "Server Offline";
-         document.getElementById("secondMessage").innerHTML = "";
-      }
-
-      connection.onmessage = function (evt) {
-         var msg;
-         msg = evt.data;
-
-         console.log("Message received: " + msg);
-         document.getElementById("topMessage").innerHTML = msg;
-         var obj = JSON.parse(msg);
-
-         if( "client_id" in obj)
-            document.getElementById("secondMessage").innerHTML = obj.client_id;
+      <div id="chat_window">
+          
+          <div id="messages"></div>
+          
+          <div id="input_container">
+              <button id="attach_file">+</button>
+              <div id="msg_bar_group">
+                <input type="text" id="msg_input" placeholder="Message">
+                <div id="typing_status"></div>
+              </div>
+              
+              <button id="msg_btn">Send</button>
+          </div>
          
-      }
-   
-   </script>
+
+      </div>
+  </div>
+
+  <script src="./js/index.js"></script>
+
+  </body>
 
 
 </html>

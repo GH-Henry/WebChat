@@ -11,25 +11,23 @@ import net.freeutils.httpserver.HTTPServer.Request;
 import net.freeutils.httpserver.HTTPServer.Response;
 import net.freeutils.httpserver.HTTPServer.VirtualHost;
 
-public class HttpServerImplementation
-{
+public class HttpServerImplementation {
 
   int port;
   String dirname;
 
-    public HttpServerImplementation(int _port, String _dirName) {
-        System.out.println("creating http server port " + _port);
-        port = _port;
-        dirname = _dirName;
+    public HttpServerImplementation(int port, String dirName) {
+        this.port = port;
+        this.dirname = dirName;
     }
 
     public void start() {
-
-        System.out.println("In http server impl start\n");
-        
         try
         {
             File dir = new File(dirname);
+
+            //RM
+            System.out.println("Path to default html: " + dir.getAbsolutePath());
 
             if (!dir.canRead()) throw new FileNotFoundException(dir.getAbsolutePath());
             
@@ -38,11 +36,15 @@ public class HttpServerImplementation
             VirtualHost host  = server.getVirtualHost(null); // default host
             host.setAllowGeneratedIndex(true); // with directory index pages
 
-            host.addContext("/", new FileContextHandler(dir));
+            host.addContext("/", new FileContextHandler(new File(dir.getAbsolutePath())));
+
+            host.addContext("/css",  new FileContextHandler(new File("./css")));
+
+            host.addContext("/js",  new FileContextHandler(new File("./js")));
+
 
             host.addContext("/api/time", new ContextHandler() {
-                public int serve(Request req, Response resp) throws IOException
-                {
+                public int serve(Request req, Response resp) throws IOException {
                     long now = System.currentTimeMillis();
                     resp.getHeaders().add("Content-Type", "text/plain");
                     resp.send(200, String.format("%tF %<tT", now));
