@@ -7,13 +7,14 @@ connection = new WebSocket(serverUrl);
 connection.onopen = function (evt) {
   console.log("open");
 }
-connection.onclose = function (evt) {
+
+connection.onclose = function(evt) {
   console.log("close");
   document.getElementById("topMessage").innerHTML = "Server Offline";
   document.getElementById("secondMessage").innerHTML = "";
 }
 
-connection.onmessage = function (evt) {
+connection.onmessage = function(evt) {
   let msg;
   msg = evt.data;
 
@@ -21,7 +22,7 @@ connection.onmessage = function (evt) {
   document.getElementById("topMessage").innerHTML = msg;
   let obj = JSON.parse(msg);
 
-  if( "client_id" in obj) {
+  if("client_id" in obj) {
     document.getElementById("secondMessage").innerHTML = obj.client_id;
   }       
 }
