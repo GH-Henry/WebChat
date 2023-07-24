@@ -1,6 +1,5 @@
 package uta.cse3310;
 
-
 public class Account {
 
   private String username;
@@ -11,12 +10,17 @@ public class Account {
     password = _password;
   }
 
-  public String getAccountName()    {   return username;  }
-  public String getAccountPassword()   {   return password;     }
+  public String getAccountName() {
+    return username;
+  }
+
+  public String getAccountPassword() {
+    return password;
+  }
 
   @Override
   public String toString() {
     return username;
   }
-  
+
 }

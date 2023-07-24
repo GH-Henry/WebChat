@@ -21,14 +21,21 @@ import org.java_websocket.server.WebSocketServer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-
 public class WS extends WebSocketServer {
     private static Connection db = null;
     Log log = new Log();
 
-    public WS(int port) throws UnknownHostException {  super(new InetSocketAddress(port));     }
-    public WS(InetSocketAddress address) {     super(address);     }
-    public WS(int port, Draft_6455 draft) {    super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));   }
+    public WS(int port) throws UnknownHostException {
+        super(new InetSocketAddress(port));
+    }
+
+    public WS(InetSocketAddress address) {
+        super(address);
+    }
+
+    public WS(int port, Draft_6455 draft) {
+        super(new InetSocketAddress(port), Collections.<Draft>singletonList(draft));
+    }
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
@@ -48,51 +55,45 @@ public class WS extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("\nReceived message: " + message + "\n"); //RM
+        System.out.println("\nReceived message: " + message + "\n"); // RM
         log.writeToLog("Received message: " + message);
 
         Gson gson = new Gson();
         JsonObject json = gson.fromJson(message, JsonObject.class);
         String type = json.get("type").getAsString();
 
-        System.out.println("Received msg of type: " + type); //RM
+        System.out.println("Received msg of type: " + type); // RM
         log.writeToLog("Received msg of type: " + type);
 
-        if(type.equals("typing_status")) {
+        if (type.equals("typing_status")) {
             typing_status_request(conn);
-        }
-        else if(type.equals("msg")) {
+        } else if (type.equals("msg")) {
             msg_request(
-                conn,
-                json.get("content").getAsString()
-            );
-        }
-        else if(type.equals("login_request")) {
-            
-            //RM
-            System.out.println("Creating login request with user: (" 
-            + json.get("username").getAsString() 
-            + ") and pwd: (" 
-            + json.get("password").getAsString() + ")");
-            
-            log.writeToLog("Creating login request with user: (" 
-            + json.get("username").getAsString() 
-            + ") and pwd: (" 
-            + json.get("password").getAsString() + ")");
+                    conn,
+                    json.get("content").getAsString());
+        } else if (type.equals("login_request")) {
+
+            // RM
+            System.out.println("Creating login request with user: ("
+                    + json.get("username").getAsString()
+                    + ") and pwd: ("
+                    + json.get("password").getAsString() + ")");
+
+            log.writeToLog("Creating login request with user: ("
+                    + json.get("username").getAsString()
+                    + ") and pwd: ("
+                    + json.get("password").getAsString() + ")");
 
             login_request(
-                conn,
-                json.get("username").getAsString(),
-                json.get("password").getAsString()
-            );
-            
-        }
-        else if(type.equals("signup_request")) {
+                    conn,
+                    json.get("username").getAsString(),
+                    json.get("password").getAsString());
+
+        } else if (type.equals("signup_request")) {
             signup_request(
-                conn,
-                json.get("username").getAsString(),
-                json.get("password").getAsString()
-            );
+                    conn,
+                    json.get("username").getAsString(),
+                    json.get("password").getAsString());
         }
     }
 
@@ -108,7 +109,8 @@ public class WS extends WebSocketServer {
         log.writeToLog("Websocket connection (" + conn + ") encountered exception: " + ex);
         ex.printStackTrace();
         if (conn != null) {
-        // some errors like port binding failed may not be assignable to a specific websocket
+            // some errors like port binding failed may not be assignable to a specific
+            // websocket
             System.out.println("Port Binding Failed!");
             log.writeToLog("Port Binding Failed!");
         }
@@ -116,7 +118,7 @@ public class WS extends WebSocketServer {
 
     @Override
     public void onStart() {
-        //reseting Database on server reset and recreating Log.txt
+        // reseting Database on server reset and recreating Log.txt
         try {
             resetDB();
             log.createLog();
@@ -130,7 +132,6 @@ public class WS extends WebSocketServer {
         setConnectionLostTimeout(100);
     }
 
-
     private static void connectDB() throws SQLException {
         String url = "jdbc:sqlite:webchat/db/test.db";
         db = DriverManager.getConnection(url);
@@ -139,7 +140,7 @@ public class WS extends WebSocketServer {
     static void resetDB() throws SQLException {
         db = null;
         File f = new File("webchat/db/test.db");
-        if(f.exists()) {
+        if (f.exists()) {
             System.out.println("Deleted db at: " + f.getAbsolutePath());
             f.delete();
         }
@@ -149,10 +150,10 @@ public class WS extends WebSocketServer {
 
     public static void createTable() throws SQLException {
         String sqlString = "Create TABLE Account (\n"
-                        + "     username TEXT NOT NULL CHECK (length(username) > 2 AND length(username) < 31),\n"
-                        + "     password TEXT NOT NULL CHECK (length(password) > 2 AND length(password) < 31),\n"
-                        + "     PRIMARY KEY(username)\n"
-                        + ");";
+                + "     username TEXT NOT NULL CHECK (length(username) > 2 AND length(username) < 31),\n"
+                + "     password TEXT NOT NULL CHECK (length(password) > 2 AND length(password) < 31),\n"
+                + "     PRIMARY KEY(username)\n"
+                + ");";
 
         Statement statement = db.createStatement();
         statement.executeUpdate(sqlString);
@@ -160,14 +161,14 @@ public class WS extends WebSocketServer {
         // System.out.println("Created sqlite table: \n" + sqlString); //RM
     }
 
-    //Prints all accounts in db
+    // Prints all accounts in db
     private void selectAccounts() throws SQLException {
         String sqlString = "SELECT * FROM Account;";
         Statement statement = db.createStatement();
         ResultSet rs = statement.executeQuery(sqlString);
 
         System.out.println("Accounts:\n");
-        while(rs.next()) {
+        while (rs.next()) {
             String username = rs.getString("username");
             String password = rs.getString("password");
             System.out.println("username: " + username);
@@ -185,19 +186,20 @@ public class WS extends WebSocketServer {
             ResultSet rs = statement.executeQuery();
 
             String user = rs.getString("username");
-            if(user == null) throw new SQLException(); //Username is null if none matching found
+            if (user == null)
+                throw new SQLException(); // Username is null if none matching found
 
             Account account = new Account(user, rs.getString("password"));
             rs.close();
             statement.close();
 
-            if(account.getAccountPassword().equals(password)) process_login(conn, account);
-            else sendError(conn, "invalid_password");
-        }
-        catch (SQLException e) {
+            if (account.getAccountPassword().equals(password))
+                process_login(conn, account);
+            else
+                sendError(conn, "invalid_password");
+        } catch (SQLException e) {
             sendError(conn, "user_not_found");
-        }
-        catch (Exception e) { // General error handling
+        } catch (Exception e) { // General error handling
             sendError(conn, "login_failure");
         }
     }
@@ -209,15 +211,17 @@ public class WS extends WebSocketServer {
         try {
             PreparedStatement statement = db.prepareStatement(sql);
             ResultSet rs = statement.executeQuery();
-            
+
             int count = rs.getInt(1);
             rs.close();
             statement.close();
 
-            if(count > 0) sendError(conn, "duplicate_username");
-            else createAccount(conn, username, password);
-            
-        } catch(SQLException e) {
+            if (count > 0)
+                sendError(conn, "duplicate_username");
+            else
+                createAccount(conn, username, password);
+
+        } catch (SQLException e) {
             System.out.println("App.signup_request() error");
             e.printStackTrace();
             sendError(conn, "signup_failure");
@@ -230,27 +234,27 @@ public class WS extends WebSocketServer {
 
         try {
             PreparedStatement statement = db.prepareStatement(sql);
-            statement.setString(1,username);
-            statement.setString(2,password);
+            statement.setString(1, username);
+            statement.setString(2, password);
             statement.executeUpdate();
 
             // System.out.println("Added account, now:"); //RM
             // selectAccounts(); //RM
 
-            process_login(conn, new Account(username,password));
-        }
-        catch(Exception e) {
+            process_login(conn, new Account(username, password));
+        } catch (Exception e) {
             System.out.println("App.createAccount() error");
             e.printStackTrace();
             sendError(conn, "signup_failure");
         }
     }
 
-    // Associate account credentials with their websocket connection, and update client
+    // Associate account credentials with their websocket connection, and update
+    // client
     private void process_login(WebSocket conn, Account account) {
         EventMessage msg = new EventMessage("login_success", account);
         Gson gson = new Gson();
-        conn.setAttachment(account); //Set attachment to associate connection with its credentials
+        conn.setAttachment(account); // Set attachment to associate connection with its credentials
         conn.send(gson.toJson(msg));
     }
 
@@ -263,7 +267,7 @@ public class WS extends WebSocketServer {
     }
 
     private void msg_request(WebSocket conn, String content) {
-        if(!(conn.getAttachment() instanceof Account)) {
+        if (!(conn.getAttachment() instanceof Account)) {
             System.out.println("App.msg_request() error: Invalid message request, from non logged in user");
             sendError(conn, "invalid_request");
             return;
@@ -277,7 +281,8 @@ public class WS extends WebSocketServer {
     }
 
     private void typing_status_request(WebSocket conn) {
-        if(!(conn.getAttachment() instanceof Account)) return;
+        if (!(conn.getAttachment() instanceof Account))
+            return;
         Account account = conn.getAttachment();
         JsonObject json = new JsonObject();
         json.addProperty("type", "typing_status");

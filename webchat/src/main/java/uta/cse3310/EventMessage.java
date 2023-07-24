@@ -8,5 +8,5 @@ public class EventMessage {
     type = _type;
     content = _msg;
   }
-  
+
 }
