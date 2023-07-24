@@ -4,25 +4,32 @@ import java.net.UnknownHostException;
 
 public class App {
     public static void main(String[] args) throws UnknownHostException {
-        System.out.println("\nWelcome to Webchat!\n");
-        int HTTPport = Integer.parseInt(args[0]); // HTTP port from first arg
-        int WSport = Integer.parseInt(args[1]); // Websocket port from second arg
+        if ((args[0].equals("8080")) && (args[1].equals("8081"))) {
+            System.out.println("\nWelcome to Webchat!\n");
 
-        // Setup the http server
-        System.out.println("Enter HTTP Server port: ");
-        HttpServerImplementation h = new HttpServerImplementation(HTTPport, "webchat/html/index.html");
-        h.start();
-        System.out.println("http Server started on port: " + HTTPport);
+            int HTTPport = Integer.parseInt(args[0]); // HTTP port from first arg
+            int WSport = Integer.parseInt(args[1]); // Websocket port from second arg
 
-        // Create and start websocket server
-        System.out.println("\nEnter WebSocket Server port: ");
-        WS a = new WS(WSport);
-        a.start();
-        System.out.println("WebSocket Server started on port: " + WSport);
+            // Setup the http server
+            HttpServerImplementation h = new HttpServerImplementation(HTTPport, "webchat/html/index.html");
+            h.start();
+            System.out.println("http Server started on port: " + HTTPport);
 
-        // Create and write to Log.txt
-        System.out.println("Message history will be saved to: Log.txt");
+            // Create and start websocket server
+            WS a = new WS(WSport);
+            a.start();
+            System.out.println("WebSocket Server started on port: " + WSport);
 
-        // a.selectAccounts(); //RM
+            // Create and write to Log.txt
+            System.out.println("Message history will be saved to: Log.txt");
+
+            // a.selectAccounts(); //RM
+        }
+
+        else { // exiting program
+            System.out.println("Please use ports: args[0] = 8080(HTTP) and args[1] = 8081(WebSocket)");
+            System.out.println("\nExiting Program...\n");
+            System.exit(-1);
+        }
     }
 }
