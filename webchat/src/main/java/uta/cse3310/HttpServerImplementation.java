@@ -13,8 +13,8 @@ import net.freeutils.httpserver.HTTPServer.VirtualHost;
 
 public class HttpServerImplementation {
 
-  int port;
-  String dirname;
+    int port;
+    String dirname;
 
     public HttpServerImplementation(int port, String dirName) {
         this.port = port;
@@ -22,26 +22,25 @@ public class HttpServerImplementation {
     }
 
     public void start() {
-        try
-        {
+        try {
             File dir = new File(dirname);
 
-            //RM
+            // RM
             System.out.println("Path to default html: " + dir.getAbsolutePath());
 
-            if (!dir.canRead()) throw new FileNotFoundException(dir.getAbsolutePath());
-            
+            if (!dir.canRead())
+                throw new FileNotFoundException(dir.getAbsolutePath());
+
             // set up server
             HTTPServer server = new HTTPServer(port);
-            VirtualHost host  = server.getVirtualHost(null); // default host
+            VirtualHost host = server.getVirtualHost(null); // default host
             host.setAllowGeneratedIndex(true); // with directory index pages
 
             host.addContext("/", new FileContextHandler(new File(dir.getAbsolutePath())));
 
-            host.addContext("/css",  new FileContextHandler(new File("./css")));
+            host.addContext("/css", new FileContextHandler(new File("./css")));
 
-            host.addContext("/js",  new FileContextHandler(new File("./js")));
-
+            host.addContext("/js", new FileContextHandler(new File("./js")));
 
             host.addContext("/api/time", new ContextHandler() {
                 public int serve(Request req, Response resp) throws IOException {
