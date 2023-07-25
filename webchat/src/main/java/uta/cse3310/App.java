@@ -1,19 +1,27 @@
 package uta.cse3310;
 
-import java.net.UnknownHostException;
-
 public class App {
-    public static void main(String[] args) throws UnknownHostException {
-        if ((args[0].equals("8080")) && (args[1].equals("8081"))) {
-            System.out.println("\nWelcome to Webchat!\n");
+    public static void main(String[] args) {
+        int HTTPport;
+        int WSport;
 
-            int HTTPport = Integer.parseInt(args[0]); // HTTP port from first arg
-            int WSport = Integer.parseInt(args[1]); // Websocket port from second arg
+        try {
+            HTTPport = Integer.parseInt(args[0]); // HTTP port from first arg
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("No port specified, defaulting to HTTP server on port 8080");
+            HTTPport = 8080;
+        } catch (NumberFormatException e) {
+            System.out.println("Couln't parse port from input, defaulting to HTTP server on port 8080");
+            HTTPport = 8080;
+        }
 
+        WSport = HTTPport + 1;
+
+        try {
             // Setup the http server
-            HttpServerImplementation h = new HttpServerImplementation(HTTPport, "webchat/html/index.html");
+            HttpServerImplementation h = new HttpServerImplementation(HTTPport, "./html");
             h.start();
-            System.out.println("http Server started on port: " + HTTPport);
+            System.out.println("Http Server started on port: " + HTTPport);
 
             // Create and start websocket server
             WS a = new WS(WSport);
@@ -22,14 +30,10 @@ public class App {
 
             // Create and write to Log.txt
             System.out.println("Message history will be saved to: Log.txt");
-
-            // a.selectAccounts(); //RM
         }
-
-        else { // exiting program
-            System.out.println("Please use ports: args[0] = 8080(HTTP) and args[1] = 8081(WebSocket)");
-            System.out.println("\nExiting Program...\n");
-            System.exit(-1);
+        catch (Exception e) {
+            System.out.println("Failed to start. Due to " + e.getCause());
+            return;
         }
     }
 }
