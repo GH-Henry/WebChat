@@ -133,13 +133,13 @@ public class WS extends WebSocketServer {
     }
 
     private static void connectDB() throws SQLException {
-        String url = "jdbc:sqlite:webchat/db/test.db";
+        String url = "jdbc:sqlite:./db/test.db";
         db = DriverManager.getConnection(url);
     }
 
     static void resetDB() throws SQLException {
         db = null;
-        File f = new File("webchat/db/test.db");
+        File f = new File("./db/test.db");
         if (f.exists()) {
             System.out.println("Deleted db at: " + f.getAbsolutePath());
             f.delete();

@@ -1,28 +1,39 @@
 package uta.cse3310;
 
-import java.net.UnknownHostException;
-
 public class App {
-    public static void main(String[] args) throws UnknownHostException {
-        System.out.println("\nWelcome to Webchat!\n");
-        int HTTPport = Integer.parseInt(args[0]); // HTTP port from first arg
-        int WSport = Integer.parseInt(args[1]); // Websocket port from second arg
+    public static void main(String[] args) {
+        int HTTPport;
+        int WSport;
 
-        // Setup the http server
-        System.out.println("Enter HTTP Server port: ");
-        HttpServerImplementation h = new HttpServerImplementation(HTTPport, "webchat/html/index.html");
-        h.start();
-        System.out.println("http Server started on port: " + HTTPport);
+        try {
+            HTTPport = Integer.parseInt(args[0]); // HTTP port from first arg
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("No port specified, defaulting to HTTP server on port 8080");
+            HTTPport = 8080;
+        } catch (NumberFormatException e) {
+            System.out.println("Couln't parse port from input, defaulting to HTTP server on port 8080");
+            HTTPport = 8080;
+        }
 
-        // Create and start websocket server
-        System.out.println("\nEnter WebSocket Server port: ");
-        WS a = new WS(WSport);
-        a.start();
-        System.out.println("WebSocket Server started on port: " + WSport);
+        WSport = HTTPport + 1;
 
-        // Create and write to Log.txt
-        System.out.println("Message history will be saved to: Log.txt");
+        try {
+            // Setup the http server
+            HttpServerImplementation h = new HttpServerImplementation(HTTPport, "./html");
+            h.start();
+            System.out.println("Http Server started on port: " + HTTPport);
 
-        // a.selectAccounts(); //RM
+            // Create and start websocket server
+            WS a = new WS(WSport);
+            a.start();
+            System.out.println("WebSocket Server started on port: " + WSport);
+
+            // Create and write to Log.txt
+            System.out.println("Message history will be saved to: Log.txt");
+        }
+        catch (Exception e) {
+            System.out.println("Failed to start. Due to " + e.getCause());
+            return;
+        }
     }
 }

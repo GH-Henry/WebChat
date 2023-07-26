@@ -1,5 +1,5 @@
-var serverUrl = "ws://" + window.location.hostname + ":8081";
-var conn = new WebSocket(serverUrl);
+const serverUrl = "ws://" + window.location.hostname + ":" +  Number(Number(window.location.port)+1);
+const conn = new WebSocket(serverUrl);
 
 const login_form = document.getElementById("login_form");
 login_form.addEventListener("submit", function(event) {
