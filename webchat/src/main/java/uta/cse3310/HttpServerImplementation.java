@@ -38,9 +38,9 @@ public class HttpServerImplementation {
 
             host.addContext("/", new FileContextHandler(new File(dir.getAbsolutePath())));
 
-            host.addContext("/css", new FileContextHandler(new File("./css")));
+            host.addContext("/css", new FileContextHandler(new File("webchat/css")));
 
-            host.addContext("/js", new FileContextHandler(new File("./js")));
+            host.addContext("/js", new FileContextHandler(new File("webchat/js")));
 
             host.addContext("/api/time", new ContextHandler() {
                 public int serve(Request req, Response resp) throws IOException {

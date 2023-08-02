@@ -24,6 +24,8 @@ import com.google.gson.JsonObject;
 public class WS extends WebSocketServer {
     private static Connection db = null;
     Log log = new Log();
+    AccountList accounts = new AccountList();
+    int id = 1;
 
     public WS(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
@@ -133,13 +135,13 @@ public class WS extends WebSocketServer {
     }
 
     private static void connectDB() throws SQLException {
-        String url = "jdbc:sqlite:./db/test.db";
+        String url = "jdbc:sqlite:webchat/db/test.db";
         db = DriverManager.getConnection(url);
     }
 
     static void resetDB() throws SQLException {
         db = null;
-        File f = new File("./db/test.db");
+        File f = new File("db/test.db");
         if (f.exists()) {
             System.out.println("Deleted db at: " + f.getAbsolutePath());
             f.delete();
@@ -189,7 +191,8 @@ public class WS extends WebSocketServer {
             if (user == null)
                 throw new SQLException(); // Username is null if none matching found
 
-            Account account = new Account(user, rs.getString("password"));
+            Account account = new Account(user, rs.getString("password"), id);
+            id++;
             rs.close();
             statement.close();
 
@@ -241,7 +244,8 @@ public class WS extends WebSocketServer {
             // System.out.println("Added account, now:"); //RM
             // selectAccounts(); //RM
 
-            process_login(conn, new Account(username, password));
+            process_login(conn, new Account(username, password, id));
+            
         } catch (Exception e) {
             System.out.println("App.createAccount() error");
             e.printStackTrace();
@@ -255,6 +259,7 @@ public class WS extends WebSocketServer {
         EventMessage msg = new EventMessage("login_success", account);
         Gson gson = new Gson();
         conn.setAttachment(account); // Set attachment to associate connection with its credentials
+        accounts.addAccount(account);
         conn.send(gson.toJson(msg));
     }
 
