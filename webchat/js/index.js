@@ -9,7 +9,7 @@ login_form.addEventListener("submit", function(event) {
     type: "login_request",
     username: document.getElementById("login_form_username").value,
     password: document.getElementById("login_form_password").value,
-  }
+  };
   conn.send(JSON.stringify(msg));
   console.log("Login form sent"); //RM
 
@@ -25,7 +25,7 @@ signup_form.addEventListener("submit", function(event) {
     type: "signup_request",
     username: document.getElementById("signup_form_username").value,
     password: document.getElementById("signup_form_password").value,
-  }
+  };
 
   conn.send(JSON.stringify(msg));
   console.log("Signup form sent"); //RM
@@ -35,7 +35,17 @@ signup_form.addEventListener("submit", function(event) {
 });
 
 conn.onopen = function(event) {
-  //Perhaps implement check for login credentials in browser storage and auto login
+  const username = localStorage.getItem("username");
+  const password = localStorage.getItem("password");
+
+  if(username && password) {
+    const msg = {
+      type: "login_request",
+      username: username,
+      password: password,
+    };
+    conn.send(JSON.stringify(msg));
+  }
 
 }
 
@@ -52,6 +62,7 @@ conn.onmessage = function(event) {
     showTypingStatus(msg);
   }
   else if (msg.type === "msg") {
+    message_notif(msg);
     addMsgToChat(msg);
   }
   else if(msg.type === "login_success") {
@@ -101,16 +112,24 @@ var client = null;
 function login(msg) {
   client = new Client(
     msg.content.username,
-    msg.content.password
+    msg.content.password,
   );
   console.log("Logged in user: " + client.username); //RM
+
+  localStorage.setItem("username",msg.content.username);
+  localStorage.setItem("password",msg.content.password);
 
   formToChatPage();
 }
 
 function logout() {
   client = null;
-
+  localStorage.removeItem("username");
+  localStorage.removeItem("password");
+  const msg = {
+    type: "logout_request",
+  };
+  conn.send(JSON.stringify(msg));
 }
 
 //Switch between login and signup form displayed
@@ -170,8 +189,8 @@ msg_input.addEventListener("keydown", function(event) {
     else time = new Date();
     
     const msg = {
-      type: "typing_status"
-    }
+      type: "typing_status",
+    };
 
     conn.send(JSON.stringify(msg));
   }
@@ -182,7 +201,7 @@ function send_msg_request() {
   if(msg_input.value === "") return;
   const msg = {
     type: "msg",
-    content: msg_input.value
+    content: msg_input.value,
   };
 
   conn.send(JSON.stringify(msg));
@@ -190,10 +209,10 @@ function send_msg_request() {
 }
 
 function addMsgToChat(msg) {
+  if (client === null) return;
+
   var username = msg.from;
   var content = msg.content;
-
-  if(content === "") return;
 
   var messages = document.getElementById("messages");
   var newMessage = document.createElement("div");
@@ -221,6 +240,63 @@ function showTypingStatus(msg) {
   },5000);
 }
 
-document.getElementById("username").addEventListener("click", function(event) {
+// Used to logout and switch display back to login/signup form page when username
+//   area of bottom left corner clicked
+document.getElementById("username").addEventListener("click", () => {
+  logout();
   chatPageToForm();
 })
+
+window.addEventListener("load", () => {
+  if(Notification.permission === "default") {
+    askNotificationPermission();
+  }
+});
+
+// Ask for permission when the 'Enable notifications' button is clicked
+function askNotificationPermission() {
+  // Function to actually ask the permissions
+  function handlePermission(permission) {
+    // Whatever the user answers, we make sure Chrome stores the information
+    if (!Reflect.has(Notification, 'permission')) {
+      Notification.permission = permission;
+    }
+  };
+
+  // Check if the browser supports notifications
+  if (!Reflect.has(window, 'Notification')) {
+    console.log('This browser does not support notifications.');
+  } else {
+    if (checkNotificationPromise()) {
+      Notification.requestPermission().then(handlePermission);
+    } else {
+      Notification.requestPermission(handlePermission);
+    }
+  }
+};
+
+// Check whether browser supports the promise version of requestPermission()
+// Safari only supports the old callback-based version
+function checkNotificationPromise() {
+  try {
+    Notification.requestPermission().then();
+  } catch(e) {
+    return false;
+  }
+  return true;
+};
+
+let msg_notif;
+function message_notif(msg) {
+  if(document.visibilityState === "visible") return;
+  if(Notification.permission === "granted") {
+    msg_notif = new Notification(`New message from ${msg.from}`, {body: msg.content});
+  }
+}
+
+//Close any open notifs when tab opened
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    msg_notif.close();
+  }
+});

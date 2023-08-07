@@ -94,6 +94,8 @@ public class WS extends WebSocketServer {
                     conn,
                     json.get("username").getAsString(),
                     json.get("password").getAsString());
+        } else if (type.equals("logout_request")) {
+            process_logout(conn);
         }
     }
 
@@ -249,6 +251,14 @@ public class WS extends WebSocketServer {
         }
     }
 
+    // If active user group implemented later, will need to remove them here when they logout
+    private void process_logout(WebSocket conn) {
+        if(!(conn.getAttachment() instanceof Account)) {
+            return;
+        }
+        conn.setAttachment(null);
+    }
+
     // Associate account credentials with their websocket connection, and update
     // client
     private void process_login(WebSocket conn, Account account) {
@@ -272,6 +282,7 @@ public class WS extends WebSocketServer {
             sendError(conn, "invalid_request");
             return;
         }
+
         Account account = conn.getAttachment();
         JsonObject json = new JsonObject();
         json.addProperty("type", "msg");
