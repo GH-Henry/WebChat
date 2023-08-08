@@ -1,4 +1,4 @@
-const serverUrl = "ws://" + window.location.hostname + ":" +  Number(Number(window.location.port)+1);
+const serverUrl = "ws://" + window.location.hostname + ":" + Number(Number(window.location.port)+1);
 const conn = new WebSocket(serverUrl);
 
 const login_form = document.getElementById("login_form");
@@ -12,7 +12,7 @@ login_form.addEventListener("submit", function(event) {
   };
   conn.send(JSON.stringify(msg));
   console.log("Login form sent"); //RM
-
+  
   document.getElementById("login_form_username").value = "";
   document.getElementById("login_form_password").value = "";
 });
@@ -34,21 +34,6 @@ signup_form.addEventListener("submit", function(event) {
   document.getElementById("signup_form_password").value = "";
 });
 
-conn.onopen = function(event) {
-  const username = localStorage.getItem("username");
-  const password = localStorage.getItem("password");
-
-  if(username && password) {
-    const msg = {
-      type: "login_request",
-      username: username,
-      password: password,
-    };
-    conn.send(JSON.stringify(msg));
-  }
-
-}
-
 conn.onmessage = function(event) {
   let msg;
   if(event.isTrusted) {
@@ -58,39 +43,55 @@ conn.onmessage = function(event) {
   console.log("Received message:"); //RM
   console.log(msg);
 
-  if(msg.type === "typing_status") { //TODO Implement
-    showTypingStatus(msg);
+  switch(msg.type) {
+    case "typing_status":
+      showTypingStatus(msg);
+      break;
+    case "msg":
+      message_notif(msg);
+      addMsgToChat(msg);
+      break;
+    case "login_success":
+      login(msg);
+      break;
+    case "error":
+      switch(msg.error_type) {
+        case "user_not_found":
+          alert("User doesn't exist");
+          break;
+        case "invalid_password":
+          alert("Invalid password");
+          break;
+        case "duplicate_username":
+          alert("Username already in use");
+          break;
+        case "login_failure":
+          alert("Login request failed");
+          break;
+        case "signup_failure":
+          alert("Account creation failed");
+          break;
+        case "invalid_request":
+          alert("Invalid request");
+          break;
+      }
+      break;
+    default:
+      console.log("Unsupported message:");
+      console.log(msg);
   }
-  else if (msg.type === "msg") {
-    message_notif(msg);
-    addMsgToChat(msg);
-  }
-  else if(msg.type === "login_success") {
-    login(msg);
-  }
-  else if(msg.type === "error") {
-    if(msg.error_type === "user_not_found") { //Upon login w/ non-existing username
-      alert("User doesn't exist");
-    }
-    else if(msg.error_type === "invalid_password") { // Upon login w/ wrong pwd
-      alert("Invalid password");
-    }
-    else if(msg.error_type === "duplicate_username") { // Upon account creation w/ existing username
-      alert("Username already in use");
-    }
-    else if(msg.error_type === "login_failure") { // General error catching in login
-      alert("Login request failed");
-    }
-    else if(msg.error_type === "signup_failure") { // General error catching in account creation
-      alert("Account creation failed");
-    }
-    else if(msg.error_type === "invalid_request") { // Upon msg request by not logged in user
-      alert("Invalid request");
-    }
-  }
-  else {
-    console.log("Unsupported message:");
-    console.log(msg);
+}
+
+conn.onopen = function(event) {
+  //Has issue, login screen shows up in period before login registered by server,
+  //  should have it wait for response.
+  if(localStorage.username !== undefined && localStorage.password !== undefined) {
+    const msg = {
+      type: "login_request",
+      username: localStorage.getItem("username"),
+      password: localStorage.getItem("password"),
+    };
+    conn.send(JSON.stringify(msg));
   }
 }
 
