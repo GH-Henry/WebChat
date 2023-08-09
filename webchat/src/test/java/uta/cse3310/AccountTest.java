@@ -11,7 +11,7 @@ public class AccountTest {
   @Test
   public void testAccountName() {
     // Given
-    Account testUser = new Account("testUser", "password", 1);
+    Account testUser = new Account("testUser", "password");
 
     // When
     String username = testUser.getAccountName();
@@ -23,24 +23,12 @@ public class AccountTest {
   @Test
   public void testAccountPassword() {
     // Given
-    Account testUser = new Account("testUser", "password", 1);
+    Account testUser = new Account("testUser", "password");
 
     // When
     String password = testUser.getAccountPassword();
 
     //Then
     assertEquals(password, "password");
-  }
-
-  @Test
-  public void testAccountID() {
-    // Given
-    Account testUser = new Account("testUser", "password", 1);
-
-    // When
-    int id = testUser.getID();
-
-    //Then
-    assertEquals(id, 1);
   }
 }

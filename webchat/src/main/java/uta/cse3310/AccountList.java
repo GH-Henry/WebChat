@@ -3,14 +3,18 @@ package uta.cse3310;
 import java.util.ArrayList;
 
 public class AccountList {
-    ArrayList <Account> accountList = new ArrayList<>();
+    private ArrayList <Account> accountList = new ArrayList<>();
 
-    public void addAccount (Account account) {
+    AccountList(){}
+
+    //Adding Account to AccountList
+    public void addAccount(Account account) {
         accountList.add(account);
     }
 
-    public Account getAccountfromList (int i) {
-        if ((accountList.size() > i) && (i > 0)) {
+    //Retrieving Account from AccountList
+    public Account getAccountfromList(int i) {
+        if (accountList.size() >= i) {
             return accountList.get(i - 1);
         }
 
@@ -19,7 +23,14 @@ public class AccountList {
             return null;
         }
     }
-    public void printList () {
+
+    //Size of AccountList
+    public int sizeAccountList() {
+        return accountList.size();
+    }
+
+    //Print AccountList
+    public void printList() {
         System.out.println("Accounts: ");
         for (int i = 0; i < accountList.size(); i++) {
             System.out.println(accountList.get(i).toString() + " ");

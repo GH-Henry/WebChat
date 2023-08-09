@@ -24,8 +24,6 @@ import com.google.gson.JsonObject;
 public class WS extends WebSocketServer {
     private static Connection db = null;
     Log log = new Log();
-    AccountList accounts = new AccountList();
-    int id = 1;
 
     public WS(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
@@ -96,6 +94,8 @@ public class WS extends WebSocketServer {
                     conn,
                     json.get("username").getAsString(),
                     json.get("password").getAsString());
+        } else if (type.equals("logout_request")) {
+            process_logout(conn);
         }
     }
 
@@ -135,13 +135,13 @@ public class WS extends WebSocketServer {
     }
 
     private static void connectDB() throws SQLException {
-        String url = "jdbc:sqlite:webchat/db/test.db";
+        String url = "jdbc:sqlite:./db/test.db";
         db = DriverManager.getConnection(url);
     }
 
     static void resetDB() throws SQLException {
         db = null;
-        File f = new File("db/test.db");
+        File f = new File("./db/test.db");
         if (f.exists()) {
             System.out.println("Deleted db at: " + f.getAbsolutePath());
             f.delete();
@@ -191,8 +191,7 @@ public class WS extends WebSocketServer {
             if (user == null)
                 throw new SQLException(); // Username is null if none matching found
 
-            Account account = new Account(user, rs.getString("password"), id);
-            id++;
+            Account account = new Account(user, rs.getString("password"));
             rs.close();
             statement.close();
 
@@ -244,13 +243,20 @@ public class WS extends WebSocketServer {
             // System.out.println("Added account, now:"); //RM
             // selectAccounts(); //RM
 
-            process_login(conn, new Account(username, password, id));
-            
+            process_login(conn, new Account(username, password));
         } catch (Exception e) {
             System.out.println("App.createAccount() error");
             e.printStackTrace();
             sendError(conn, "signup_failure");
         }
+    }
+
+    // If active user group implemented later, will need to remove them here when they logout
+    private void process_logout(WebSocket conn) {
+        if(!(conn.getAttachment() instanceof Account)) {
+            return;
+        }
+        conn.setAttachment(null);
     }
 
     // Associate account credentials with their websocket connection, and update
@@ -259,7 +265,6 @@ public class WS extends WebSocketServer {
         EventMessage msg = new EventMessage("login_success", account);
         Gson gson = new Gson();
         conn.setAttachment(account); // Set attachment to associate connection with its credentials
-        accounts.addAccount(account);
         conn.send(gson.toJson(msg));
     }
 
@@ -277,12 +282,14 @@ public class WS extends WebSocketServer {
             sendError(conn, "invalid_request");
             return;
         }
+
         Account account = conn.getAttachment();
         JsonObject json = new JsonObject();
         json.addProperty("type", "msg");
         json.addProperty("from", account.getAccountName());
         json.addProperty("content", content);
         broadcast(json.toString());
+        log.writeToLog(json.toString());
     }
 
     private void typing_status_request(WebSocket conn) {
@@ -293,5 +300,6 @@ public class WS extends WebSocketServer {
         json.addProperty("type", "typing_status");
         json.addProperty("from", account.getAccountName());
         broadcast(json.toString());
+        log.writeToLog(json.toString());
     }
 }
