@@ -1,23 +1,21 @@
 package uta.cse3310;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import com.google.gson.*;
 
 public class Log {
     private File file = new File("Log.txt");
 
-    // creates file
+    // creates Log file
     public void createLog() {
         try {
             if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
+                System.out.println(file.getName() + "created!");
             } else {
-                System.out.println("File already exists.");
+                System.out.println(file.getName() + "already exists.");
             }
         } catch (IOException e) {
-            System.out.println("An error occured.");
+            System.out.println("An error occured creating Log.txt!");
             e.printStackTrace();
         }
     }
@@ -29,11 +27,12 @@ public class Log {
                 .toJson("{" + java.time.LocalDate.now() + "," + java.time.LocalTime.now() + "," + text + "}");
 
         try {
-            FileWriter writer = new FileWriter("Log.txt", true);
-            writer.write(textJson + "\n");
-            writer.close();
+            FileWriter fw = new FileWriter("Log.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(textJson + "\n");
+            bw.close();
         } catch (IOException e) {
-            System.out.println("An error occured.");
+            System.out.println("An error occured writing to Log.txt!");
             e.printStackTrace();
         }
     }

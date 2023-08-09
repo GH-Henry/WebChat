@@ -289,6 +289,7 @@ public class WS extends WebSocketServer {
         json.addProperty("from", account.getAccountName());
         json.addProperty("content", content);
         broadcast(json.toString());
+        log.writeToLog(json.toString());
     }
 
     private void typing_status_request(WebSocket conn) {
@@ -299,5 +300,6 @@ public class WS extends WebSocketServer {
         json.addProperty("type", "typing_status");
         json.addProperty("from", account.getAccountName());
         broadcast(json.toString());
+        log.writeToLog(json.toString());
     }
 }
