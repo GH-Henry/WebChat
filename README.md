@@ -22,10 +22,10 @@ weeks (about 3 months).
 - [X] Iteration 2
   - The program is not usable, but has the overall design implemented and supports the sending of text between all users.
 
-- [ ] Iteration 3
+- [X] Iteration 3
   - The program is functional, but not perfect. Code is unit tested. The documentation is partially complete. Additional functionality is added to the program.
 
-- [ ] Iteration 4
+- [X] Iteration 4
   - Fully functional program. All requirements implemented and verified. Documentation is complete.
   - Status: Not yet started
 
@@ -34,3 +34,7 @@ weeks (about 3 months).
 In iteration 1 we learned how to create branches and merge branches together using git. We also learned how to connect a functioning HTML page with a Java server via websockets. 
 
 In iteration 2 we learned how to identify and record the functional and non-functional requirements of our application. A mock-up of the user interface was created as well as a context and class diagram to describe the relationship between components of the WebChat application. 
+
+In iteration 3 we learned about unit testing and component testing. We began writing unit tests for various functions in our program. 
+
+Int iteration 4 we learned how the web works and deployed a functioning app to the web. Our app can be found at http://cse3310.org:8080/index.html
