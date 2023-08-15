@@ -1,30 +1,30 @@
-const serverUrl = "ws://" + window.location.hostname + ":" + Number(Number(window.location.port)+1);
+const serverUrl = "ws://" + window.location.hostname + ":" + Number(Number(window.location.port) + 1);
 const conn = new WebSocket(serverUrl);
 
 const login_form = document.getElementById("login_form");
-login_form.addEventListener("submit", function(event) {
+login_form.addEventListener("submit", function (event) {
   event.preventDefault();
 
   const msg = {
     type: "login_request",
     username: document.getElementById("login_form_username").value,
-    password: document.getElementById("login_form_password").value,
+    password: document.getElementById("login_form_password").value
   };
   conn.send(JSON.stringify(msg));
   console.log("Login form sent"); //RM
-  
+
   document.getElementById("login_form_username").value = "";
   document.getElementById("login_form_password").value = "";
 });
 
 const signup_form = document.getElementById("signup_form");
-signup_form.addEventListener("submit", function(event) {
+signup_form.addEventListener("submit", function (event) {
   event.preventDefault();
 
   const msg = {
     type: "signup_request",
     username: document.getElementById("signup_form_username").value,
-    password: document.getElementById("signup_form_password").value,
+    password: document.getElementById("signup_form_password").value
   };
 
   conn.send(JSON.stringify(msg));
@@ -34,16 +34,16 @@ signup_form.addEventListener("submit", function(event) {
   document.getElementById("signup_form_password").value = "";
 });
 
-conn.onmessage = function(event) {
+conn.onmessage = function (event) {
   let msg;
-  if(event.isTrusted) {
+  if (event.isTrusted) {
     msg = JSON.parse(event.data);
   } else return;
 
   console.log("Received message:"); //RM
   console.log(msg);
 
-  switch(msg.type) {
+  switch (msg.type) {
     case "typing_status":
       showTypingStatus(msg);
       break;
@@ -55,7 +55,7 @@ conn.onmessage = function(event) {
       login(msg);
       break;
     case "error":
-      switch(msg.error_type) {
+      switch (msg.error_type) {
         case "user_not_found":
           alert("User doesn't exist");
           break;
@@ -74,7 +74,19 @@ conn.onmessage = function(event) {
         case "invalid_request":
           alert("Invalid request");
           break;
+        default:
+          alert(msg.error_type);
       }
+      break;
+    case "ignore_list_names":
+      if (msg.names.length === 0) alert("No users ignored");
+      else alert(msg.names);
+      break;
+    case "ignore_list_ids":
+      ignore_list_update(msg.ids);
+      break;
+    case "all_user_activity":
+      alert(msg.activity);
       break;
     default:
       console.log("Unsupported message:");
@@ -82,10 +94,10 @@ conn.onmessage = function(event) {
   }
 }
 
-conn.onopen = function(event) {
+conn.onopen = function (event) {
   //Has issue, login screen shows up in period before login registered by server,
   //  should have it wait for response.
-  if(localStorage.username !== undefined && localStorage.password !== undefined) {
+  if (localStorage.username != undefined && localStorage.password !== undefined) {
     const msg = {
       type: "login_request",
       username: localStorage.getItem("username"),
@@ -95,36 +107,39 @@ conn.onopen = function(event) {
   }
 }
 
-conn.onclose = function(event) {
+conn.onclose = function (event) {
   // Perhaps send msg to chat of this user leaving
   //  Set account status as offine
 }
 
 class Client {
-  constructor(username, password) {
+  constructor(uuid, username, password) {
+    this.uuid = uuid;
     this.username = username;
     this.password = password;
   }
 }
-var client = null;
-
-// var open_chat = document.getElementById("open_chat");
+let client = null;
 
 function login(msg) {
   client = new Client(
+    msg.content.uuid,
     msg.content.username,
-    msg.content.password,
+    msg.content.password
   );
   console.log("Logged in user: " + client.username); //RM
 
-  localStorage.setItem("username",msg.content.username);
-  localStorage.setItem("password",msg.content.password);
+  localStorage.setItem("uuid", msg.content.uuid);
+  localStorage.setItem("username", msg.content.username);
+  localStorage.setItem("password", msg.content.password);
 
   formToChatPage();
 }
 
 function logout() {
   client = null;
+  ignore_list_update([]);
+  localStorage.removeItem("uuid");
   localStorage.removeItem("username");
   localStorage.removeItem("password");
   const msg = {
@@ -135,7 +150,7 @@ function logout() {
 
 //Switch between login and signup form displayed
 function switchForm() {
-  if(login_form.style.display === "none") {
+  if (login_form.style.display === "none") {
     document.title = "Login";
     login_form.style.display = "block";
     signup_form.style.display = "none";
@@ -167,7 +182,7 @@ function chatPageToForm() {
 
 //Send message upon send button clicked
 const msg_btn = document.getElementById("msg_btn");
-msg_btn.addEventListener("click", function(event) {
+msg_btn.addEventListener("click", function (event) {
   event.preventDefault();
   send_msg_request();
 });
@@ -176,19 +191,19 @@ msg_btn.addEventListener("click", function(event) {
 //Also handles sending typing status messages
 var time = null;
 const msg_input = document.getElementById("msg_input");
-msg_input.addEventListener("keydown", function(event) {
-  if(event.key === "Enter") {
+msg_input.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
     event.preventDefault();
     send_msg_request();
   }
   else { //Only send typing status notif if last > 5 seconds ago
     if (time) {
       var newtime = new Date();
-      if(newtime - time < 5000) return false;
+      if (newtime - time < 5000) return false;
       else time = new Date();
     }
     else time = new Date();
-    
+
     const msg = {
       type: "typing_status",
     };
@@ -199,11 +214,21 @@ msg_input.addEventListener("keydown", function(event) {
 
 //Send contents of msg input area
 function send_msg_request() {
-  if(msg_input.value === "") return;
-  const msg = {
-    type: "msg",
-    content: msg_input.value,
-  };
+  if (msg_input.value === "") return;
+
+  let msg;
+  if (msg_input.value.startsWith("/")) {
+    msg = {
+      type: "cmd",
+      content: msg_input.value.substring(1),
+    };
+  }
+  else {
+    msg = {
+      type: "msg",
+      content: msg_input.value,
+    };
+  }
 
   conn.send(JSON.stringify(msg));
   msg_input.value = "";
@@ -212,44 +237,47 @@ function send_msg_request() {
 function addMsgToChat(msg) {
   if (client === null) return;
 
-  var username = msg.from;
-  var content = msg.content;
+  let uuid = msg.from_id;
+  let username = msg.from;
+  let content = msg.content;
 
-  var messages = document.getElementById("messages");
-  var newMessage = document.createElement("div");
-  newMessage.classList.add("message");
+  let messages = document.getElementById("messages");
+  let newMessage = document.createElement("div");
+  newMessage.classList.add("message", uuid);
 
-  var sender = document.createElement("div");
+  let sender = document.createElement("div");
   sender.textContent = username;
-  var msg_content = document.createElement("div");
+  let msg_content = document.createElement("div");
   msg_content.textContent = content;
   newMessage.append(sender);
   newMessage.append(content);
 
+  if (ignoreList.includes(uuid)) newMessage.style.display = "none";
   messages.append(newMessage);
 }
 
 const typing_status = document.getElementById("typing_status");
 function showTypingStatus(msg) {
-  var from = msg.from;
+  if (ignoreList.includes(msg.from_id)) return;
+  let from = msg.from;
 
   typing_status.textContent = from + " is typing...";
   typing_status.style.display = "flex";
 
-  setTimeout(function() {
+  setTimeout(function () {
     typing_status.style.display = "none";
-  },5000);
+  }, 5000);
 }
 
-// Used to logout and switch display back to login/signup form page when username
-//   area of bottom left corner clicked
+// Used to logout and switch display back to login/signup form page when 
+//   username area of bottom left corner clicked
 document.getElementById("username").addEventListener("click", () => {
   logout();
   chatPageToForm();
 })
 
 window.addEventListener("load", () => {
-  if(Notification.permission === "default") {
+  if (Notification.permission === "default") {
     askNotificationPermission();
   }
 });
@@ -281,7 +309,7 @@ function askNotificationPermission() {
 function checkNotificationPromise() {
   try {
     Notification.requestPermission().then();
-  } catch(e) {
+  } catch (e) {
     return false;
   }
   return true;
@@ -289,9 +317,9 @@ function checkNotificationPromise() {
 
 let msg_notif;
 function message_notif(msg) {
-  if(document.visibilityState === "visible") return;
-  if(Notification.permission === "granted") {
-    msg_notif = new Notification(`New message from ${msg.from}`, {body: msg.content});
+  if (document.visibilityState === "visible") return;
+  if (Notification.permission === "granted" && !ignoreList.includes(msg.from_id)) {
+    msg_notif = new Notification(`New message from ${msg.from}`, { body: msg.content });
   }
 }
 
@@ -301,3 +329,24 @@ document.addEventListener("visibilitychange", () => {
     msg_notif.close();
   }
 });
+
+let ignoreList = [];
+function ignore_list_update(id_list) {
+  //Set previous list to visible again
+  let i, j;
+  for (i = 0; i < ignoreList.length; i++) {
+    let messages = document.getElementsByClassName(ignoreList[i]);
+    for (j = 0; j < messages.length; j++) {
+      messages[j].style.display = "block";
+    }
+  }
+  //Update with new list, making them not visible
+  ignoreList = id_list;
+
+  for (i = 0; i < ignoreList.length; i++) {
+    let messages = document.getElementsByClassName(ignoreList[i]);
+    for (j = 0; j < messages.length; j++) {
+      messages[j].style.display = "none";
+    }
+  }
+}

@@ -58,7 +58,6 @@ public class WS extends WebSocketServer {
         Account account = conn.getAttachment();
 
         String str = "User: " + account + " has left the room!";
-        System.out.println(str);
         log.writeToLog(str);
 
         update_last_active(account.getAccountUUID());
@@ -66,14 +65,12 @@ public class WS extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        System.out.println("\nReceived message: " + message + "\n"); // RM
         log.writeToLog("Received message: " + message);
 
         Gson gson = new Gson();
         JsonObject json = gson.fromJson(message, JsonObject.class);
         String type = json.get("type").getAsString();
 
-        System.out.println("Received msg of type: " + type); // RM
         log.writeToLog("Received msg of type: " + type);
 
         switch (type) {
@@ -89,11 +86,6 @@ public class WS extends WebSocketServer {
                 break;
 
             case "login_request":
-                System.out.println("Creating login request with user: ("
-                        + json.get("username").getAsString()
-                        + ") and pwd: ("
-                        + json.get("password").getAsString() + ")"); // RM
-
                 log.writeToLog("Creating login request with user: ("
                         + json.get("username").getAsString()
                         + ") and pwd: ("
@@ -123,13 +115,11 @@ public class WS extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
-        System.out.println(conn + ": " + message);
         log.writeToLog(conn + ": " + message);
     }
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        System.out.println("\nWebsocket connection (" + conn + ") encountered exception: " + ex + "\n");
         log.writeToLog("Websocket connection (" + conn + ") encountered exception: " + ex);
         ex.printStackTrace();
         if (conn != null) {
@@ -264,8 +254,6 @@ public class WS extends WebSocketServer {
                 createAccount(conn, username, password);
 
         } catch (SQLException e) {
-            System.out.println("App.signup_request() error");
-            e.printStackTrace();
             sendError(conn, "signup_failure");
         }
     }
@@ -360,7 +348,6 @@ public class WS extends WebSocketServer {
             return;
         }
         update_last_active(((Account) conn.getAttachment()).getAccountUUID());
-        System.out.println("Received command: " + content); // Rm
 
         String[] words = content.split(" ");
 
@@ -374,7 +361,6 @@ public class WS extends WebSocketServer {
             default:
                 sendError(conn, "Unrecognized command: " + words[0]);
         }
-
     }
 
     private void ignore_request(WebSocket conn, String[] words) {
@@ -392,7 +378,6 @@ public class WS extends WebSocketServer {
                     ignore_list_names(conn);
                     break;
                 default:
-                    System.out.println("Unsupported command arg: " + words[1]);
                     sendError(conn, "Unsupported command arg: " + words[1]);
             }
         } catch (Exception e) {
@@ -458,12 +443,8 @@ public class WS extends WebSocketServer {
                 statement.setInt(2, ignoree_uuid);
                 statement.executeUpdate();
                 statement.close();
-                System.out.println("Success for del ignore pair (User: " + user.getAccountUUID() + " Ignoree: "
-                        + ignoree_uuid + ")");
             } catch (SQLException e) {
                 // Ignore list ID pair already exists
-                System.out.println(
-                        "Error on del ignore pair (User: " + user.getAccountUUID() + " Ignoree: " + ignoree_uuid + ")");
                 sendError(conn, words[i] + " wasn't on ignore list");
             }
         }
@@ -528,13 +509,13 @@ public class WS extends WebSocketServer {
         PreparedStatement statement = db.prepareStatement(sql);
         statement.setString(1, username);
         ResultSet rs = statement.executeQuery();
-        
-        //Need this, since rs.getInt will return zero when no touple exists for the username
-        if(!rs.next()) throw new SQLException("User " + username + " doesn't exist");
-        
-        int uuid = rs.getInt("uuid");
-        System.out.println("Got id: " + uuid + " for user: " + username);
 
+        // Need this, since rs.getInt will return zero when no touple exists for the
+        // username
+        if (!rs.next())
+            throw new SQLException("User " + username + " doesn't exist");
+
+        int uuid = rs.getInt("uuid");
         rs.close();
         statement.close();
 
@@ -543,15 +524,16 @@ public class WS extends WebSocketServer {
 
     private void update_last_active(int uuid) {
         String sql = "UPDATE Account SET last_active = ? WHERE uuid = ?;";
-
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+        String dateString = dateFormat.format(new Date());
         try {
             PreparedStatement statement = db.prepareStatement(sql);
-            statement.setString(1, new Date().toString());
+            statement.setString(1, dateString);
             statement.setInt(2, uuid);
             statement.executeUpdate();
             statement.close();
-        } catch (SQLException e) {
-            System.out.println("Error saving last_active time for uuid: " + uuid);
+        } catch (SQLException e) {// llama
+            log.writeToLog("Error updating activity for uuid: " + uuid + " at " + dateString);
         }
     }
 
@@ -571,7 +553,6 @@ public class WS extends WebSocketServer {
             while (rs.next()) {
                 sb.append(rs.getString("username") + "   ");
                 String date = rs.getString("last_active");
-                System.out.println("Got date: " + date);
                 Date last_active = dateFormat.parse(date);
 
                 long diff = curr_date.getTime() - last_active.getTime();
@@ -581,7 +562,6 @@ public class WS extends WebSocketServer {
                 long mins = TimeUnit.MILLISECONDS.toMinutes(diff) % 60;
                 long secs = TimeUnit.MILLISECONDS.toSeconds(diff) % 60;
                 sb.append(String.format("%d:%02d:%02d:%02d\n", days, hrs, mins, secs));
-                System.out.println(days + ":" + hrs + ":" + mins + ":" + secs);
             }
 
             rs.close();
@@ -593,11 +573,9 @@ public class WS extends WebSocketServer {
             conn.send(json.toString());
 
         } catch (SQLException e) {
-            System.out.println("Error in getting user activity:" + e.getMessage());
-            sendError(conn, "Couldn't get user activity");
+            sendError(conn, "Couldn't get user activity, SQL error");
         } catch (ParseException e) {
-            System.out.println("Error parsing date: " + e.getMessage());
-            sendError(conn, "Error parsing date");
+            sendError(conn, "Error parsing date for user activity");
         }
     }
 }
