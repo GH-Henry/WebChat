@@ -38,3 +38,31 @@ In iteration 2 we learned how to identify and record the functional and non-func
 In iteration 3 we learned about unit testing and component testing. We began writing unit tests for various functions in our program. 
 
 Int iteration 4 we learned how the web works and deployed a functioning app to the web. Our app can be found at http://cse3310.org:8080/index.html
+
+# Features
+- Typing status:
+  - Displays notification of when a user starts typing in the message input bar.
+  - Displays for 5 seconds, or until a new status notification replaces it.
+- Auto-login:
+  - Stores username and password in localStorage, unless user explicitly logs out.
+  - Can refresh the page, or open the site in a new tab, and will remain logged in with the last used credentials.
+- Notifications:
+  - When a message is received while the user is in another tab, will send a message notification.
+  - Notifications close automatically when the tab is opened.
+- Ignore list:
+  - Can add and remove users to your ignore list.
+  - Messages from ignored users are not displayed.
+  - Typing status of ignored users not displayed.
+  - Notifications from ignored users are blocked.
+
+# Usage
+- Supported commands:
+  - /ignore
+    - /ignore add <username> <username1> <username...>
+      - To add one or more users to your ignore list
+    - /ignore remove <username> <username1> <username...>
+      - To remove one or more users to your ignore list
+    - /ignore list
+      - To list the users on your ignore list
+  - /activity
+    - To list the time since last activity of all users
