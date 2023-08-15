@@ -22,10 +22,10 @@ weeks (about 3 months).
 - [X] Iteration 2
   - The program is not usable, but has the overall design implemented and supports the sending of text between all users.
 
-- [ ] Iteration 3
+- [X] Iteration 3
   - The program is functional, but not perfect. Code is unit tested. The documentation is partially complete. Additional functionality is added to the program.
 
-- [ ] Iteration 4
+- [X] Iteration 4
   - Fully functional program. All requirements implemented and verified. Documentation is complete.
   - Status: Not yet started
 
@@ -34,3 +34,31 @@ weeks (about 3 months).
 In iteration 1 we learned how to create branches and merge branches together using git. We also learned how to connect a functioning HTML page with a Java server via websockets. 
 
 In iteration 2 we learned how to identify and record the functional and non-functional requirements of our application. A mock-up of the user interface was created as well as a context and class diagram to describe the relationship between components of the WebChat application. 
+
+# Features
+- Typing status:
+  - Displays notification of when a user starts typing in the message input bar.
+  - Displays for 5 seconds, or until a new status notification replaces it.
+- Auto-login:
+  - Stores username and password in localStorage, unless user explicitly logs out.
+  - Can refresh the page, or open the site in a new tab, and will remain logged in with the last used credentials.
+- Notifications:
+  - When a message is received while the user is in another tab, will send a message notification.
+  - Notifications close automatically when the tab is opened.
+- Ignore list:
+  - Can add and remove users to your ignore list.
+  - Messages from ignored users are not displayed.
+  - Typing status of ignored users not displayed.
+  - Notifications from ignored users are blocked.
+
+# Usage
+- Supported commands:
+  - /ignore
+    - /ignore add <username> <username1> <username...>
+      - To add one or more users to your ignore list
+    - /ignore remove <username> <username1> <username...>
+      - To remove one or more users to your ignore list
+    - /ignore list
+      - To list the users on your ignore list
+  - /activity
+    - To list the time since last activity of all users
