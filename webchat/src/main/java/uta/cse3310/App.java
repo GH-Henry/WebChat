@@ -30,8 +30,7 @@ public class App {
 
             // Create and write to Log.txt
             System.out.println("Message history will be saved to: Log.txt");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Failed to start. Due to " + e.getCause());
             return;
         }
