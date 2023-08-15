@@ -35,6 +35,10 @@ In iteration 1 we learned how to create branches and merge branches together usi
 
 In iteration 2 we learned how to identify and record the functional and non-functional requirements of our application. A mock-up of the user interface was created as well as a context and class diagram to describe the relationship between components of the WebChat application. 
 
+In iteration 3 we learned about unit testing and component testing. We began writing unit tests for various functions in our program. 
+
+Int iteration 4 we learned how the web works and deployed a functioning app to the web. Our app can be found at http://cse3310.org:8080/index.html
+
 # Features
 - Typing status:
   - Displays notification of when a user starts typing in the message input bar.

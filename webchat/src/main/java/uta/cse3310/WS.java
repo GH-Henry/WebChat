@@ -327,8 +327,8 @@ public class WS extends WebSocketServer {
         json.addProperty("from_id", account.getAccountUUID());
         json.addProperty("content", content);
         broadcast(json.toString());
-
         update_last_active(account.getAccountUUID());
+        log.writeToLog(json.toString());
     }
 
     private void typing_status_request(WebSocket conn) {
@@ -340,6 +340,7 @@ public class WS extends WebSocketServer {
         json.addProperty("from", account.getAccountName());
         json.addProperty("from_id", account.getAccountUUID());
         broadcast(json.toString());
+        log.writeToLog(json.toString());
     }
 
     private void command_request(WebSocket conn, String content) {
