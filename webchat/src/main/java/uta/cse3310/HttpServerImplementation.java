@@ -25,9 +25,6 @@ public class HttpServerImplementation {
         try {
             File dir = new File(dirname);
 
-            // RM
-            System.out.println("Path to default html: " + dir.getAbsolutePath());
-
             if (!dir.canRead())
                 throw new FileNotFoundException(dir.getAbsolutePath());
 

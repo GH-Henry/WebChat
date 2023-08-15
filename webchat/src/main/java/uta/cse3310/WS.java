@@ -1,9 +1,11 @@
 package uta.cse3310;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -136,7 +138,7 @@ public class WS extends WebSocketServer {
         try {
             resetDB();
             log.createLog();
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             System.out.println("SQL Database not able to be reset!");
             e.printStackTrace();
         }
@@ -151,13 +153,20 @@ public class WS extends WebSocketServer {
         db = DriverManager.getConnection(url);
     }
 
-    static void resetDB() throws SQLException {
+    static void resetDB() throws SQLException, IOException {
         db = null;
         File f = new File("./db/test.db");
         if (f.exists()) {
             System.out.println("Deleted db at: " + f.getAbsolutePath());
             f.delete();
+        } else {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                System.out.println("Failed to create db file");
+            }
         }
+
         connectDB();
         createTable();
     }

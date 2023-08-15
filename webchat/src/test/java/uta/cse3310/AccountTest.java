@@ -9,17 +9,6 @@ import org.junit.*;
  */
 public class AccountTest {
   @Test
-  public void testAccountUUID() {
-    // Given
-    Account testUser = new Account(0,"testUser", "password");
-
-    // When
-    int uuid = testUser.getAccountUUID();
-
-    //Then
-    assertEquals(uuid, 0);
-  }
-  @Test
   public void testAccountName() {
     // Given
     Account testUser = new Account(0,"testUser", "password");

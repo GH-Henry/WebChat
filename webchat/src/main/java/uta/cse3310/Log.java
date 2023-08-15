@@ -10,9 +10,9 @@ public class Log {
     public void createLog() {
         try {
             if (file.createNewFile()) {
-                System.out.println(file.getName() + "created!");
+                System.out.println(file.getName() + " created!");
             } else {
-                System.out.println(file.getName() + "already exists.");
+                System.out.println(file.getName() + " already exists.");
             }
         } catch (IOException e) {
             System.out.println("An error occured creating Log.txt!");

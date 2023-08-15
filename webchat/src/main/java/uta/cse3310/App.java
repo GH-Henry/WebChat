@@ -19,7 +19,7 @@ public class App {
 
         try {
             // Setup the http server
-            HttpServerImplementation h = new HttpServerImplementation(HTTPport, "webchat/html");
+            HttpServerImplementation h = new HttpServerImplementation(HTTPport, "./html");
             h.start();
             System.out.println("Http Server started on port: " + HTTPport);
 
