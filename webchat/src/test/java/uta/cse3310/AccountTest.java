@@ -11,7 +11,7 @@ public class AccountTest {
   @Test
   public void testAccountName() {
     // Given
-    Account testUser = new Account("testUser", "password");
+    Account testUser = new Account(0,"testUser", "password");
 
     // When
     String username = testUser.getAccountName();
@@ -23,7 +23,7 @@ public class AccountTest {
   @Test
   public void testAccountPassword() {
     // Given
-    Account testUser = new Account("testUser", "password");
+    Account testUser = new Account(0,"testUser", "password");
 
     // When
     String password = testUser.getAccountPassword();
