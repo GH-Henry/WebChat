@@ -54,6 +54,8 @@ Int iteration 4 we learned how the web works and deployed a functioning app to t
   - Messages from ignored users are not displayed.
   - Typing status of ignored users not displayed.
   - Notifications from ignored users are blocked.
+- User activity monitoring
+  - Tracks the time since each user was last active
 
 # Usage
 - Supported commands:
@@ -66,3 +68,35 @@ Int iteration 4 we learned how the web works and deployed a functioning app to t
       - To list the users on your ignore list
   - /activity
     - To list the time since last activity of all users
+
+# Feature Testing Procedures
+-Typing status
+  - Have two instances logged in with separate credentials.
+  - Expect a typing status message to appear for both users when one types in the message bar.
+- Auto-login
+  - Login to webchat.
+  - Refreshing the page and/or closing and reopening the page.
+  - Feature is functional if the user is not prompted to login, and their username appears in the bottom left corner, and the expected username appears with their messages.
+- Notifications
+  - Have two instances logged in with different credentials.
+  - Have one instance with their browser open to a different tab than the webchat app.
+  - When the other user sends a message, a notification should appear which includes the senders username, and their message.
+  - When both have the webchat application open, no notificatins should appear for either of them when each sends a message.
+- Ignore list
+  - Have a chat with two or more users, each with multiple messages in the message history.
+  - After adding 1 or more users to the ignore list with "/ignore add <user1> <user2> <user ...>" <ins>all</ins> of the messages from <ins>all</ins> of the specified users should disappear from the message history.
+  - The ignored usernames should all appear upon usage of "/ignore list"
+  - The ignoring user should not receive typing status notifications for the ignored users
+  - The ignoring user should open another tab, so that the webchat is not active, and when ignored users send messages the ignoring user should not receive notifications for their messages.
+  - After using /ignore remove <user1>, all of the messages for the unignored user should appear in the message history again.
+  - Unignored users should not still show in /ignore list.
+  - Unignored users typing status and notifications should function normally.
+- Activity tracking
+  - Using different accounts for each test, with a single monitoring account to view the activity, :
+    - Track time from creation of an account.
+    - Track time from login with an existing user.
+    - Login and track time from when you send a message from it.
+    - Login and track time from closing out the page of that account.
+  - With the master/monitoring account use the /activity command to view the time since last activity of all users. Check the times against the expected values with the accounts used for each test. Do not use /activity from a testing account during this process, since the command usage is a form of activity.
+
+
