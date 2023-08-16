@@ -70,7 +70,7 @@ Int iteration 4 we learned how the web works and deployed a functioning app to t
     - To list the time since last activity of all users
 
 # Feature Testing Procedures
--Typing status
+- Typing status
   - Have two instances logged in with separate credentials.
   - Expect a typing status message to appear for both users when one types in the message bar.
 - Auto-login
